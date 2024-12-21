@@ -1,3 +1,5 @@
+import CurrentWeather from "@/components/CurrentWeather";
+import HourlyTemprature from "@/components/HourlyTemprature";
 import WeatherSkeleton from "@/components/loading-skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -16,10 +18,9 @@ const WeatherDashboard = () => {
     isLoading: locationLoading,
     getLocation,
   } = useGeoLocation();
-
-  const locationQuery = useReverseGeocodeQuery(coordinates);
-  const weatherQuery = useWeatherQuery(coordinates);
   const forecastQuery = useForecastQuery(coordinates);
+  const weatherQuery = useWeatherQuery(coordinates);
+  const locationQuery = useReverseGeocodeQuery(coordinates);
 
   const handleRefresh = () => {
     getLocation();
@@ -65,6 +66,27 @@ const WeatherDashboard = () => {
     );
   }
 
+  const locationName = locationQuery.data?.[0];
+
+  if (weatherQuery.error || forecastQuery.error) {
+    return (
+      <Alert variant="destructive">
+        <AlertTitle>Location Error</AlertTitle>
+        <AlertDescription className="flex flex-col gap-4">
+          <p>Failed to fetch the weather data,Please try again</p>
+          <Button onClick={getLocation} variant="outline" className="w-fit">
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Retry
+          </Button>
+        </AlertDescription>
+      </Alert>
+    );
+  }
+
+  if (!weatherQuery.data || !forecastQuery.data) {
+    return <WeatherSkeleton />;
+  }
+
   return (
     <div className="space-y-4">
       {/* favourite cities */}
@@ -74,12 +96,33 @@ const WeatherDashboard = () => {
           variant="outline"
           size="icon"
           onClick={handleRefresh}
-          // disabled
+          disabled={weatherQuery.isFetching || forecastQuery.isFetching}
         >
-          <RefreshCw className="h-4 w-4" />
+          <RefreshCw
+            className={`h-4 w-4 ${
+              weatherQuery.isFetching ? "animate-spin" : ""
+            }`}
+          />
         </Button>
       </div>
       {/* current and hourly weather */}
+      <div className="grid gap-6">
+        <div className="flex flex-col lg:flex-row gap-4">
+          {weatherQuery?.data && (
+            <CurrentWeather
+              data={weatherQuery?.data}
+              locationName={locationName}
+            />
+          )}
+          {/*current weather  */}
+          <HourlyTemprature data={forecastQuery.data} />
+          {/* hourly weather */}
+        </div>
+        <div>
+          {/* details */}
+          {/* forecast */}
+        </div>
+      </div>
     </div>
   );
 };
