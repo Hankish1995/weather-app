@@ -44,7 +44,7 @@ const HourlyTemprature = ({ data }: HourlyTempratureProps) => {
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
-                tickFormatter={(value: any) => `${value}°`}
+                tickFormatter={(value) => `${value}°`}
               />
               <Tooltip
                 content={({ active, payload }) => {

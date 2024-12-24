@@ -1,8 +1,11 @@
 import CurrentWeather from "@/components/CurrentWeather";
+import FavouriteCities from "@/components/FavouriteCities";
 import HourlyTemprature from "@/components/HourlyTemprature";
 import WeatherSkeleton from "@/components/loading-skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import WeatherDetails from "@/components/WeatherDetails";
+import WeatherForecast from "@/components/WeatherForecast";
 import { useGeoLocation } from "@/hooks/use-geolocation";
 import {
   useForecastQuery,
@@ -89,7 +92,7 @@ const WeatherDashboard = () => {
 
   return (
     <div className="space-y-4">
-      {/* favourite cities */}
+      <FavouriteCities />
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold tracking-tight">My Location</h1>
         <Button
@@ -118,8 +121,10 @@ const WeatherDashboard = () => {
           <HourlyTemprature data={forecastQuery.data} />
           {/* hourly weather */}
         </div>
-        <div>
+        <div className="grid gap-6 md:grid-cols-2 items-start">
+          <WeatherDetails data={weatherQuery?.data} />
           {/* details */}
+          <WeatherForecast data={forecastQuery.data} />
           {/* forecast */}
         </div>
       </div>
